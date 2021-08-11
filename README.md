@@ -1,2 +1,3 @@
 # xlsxresearch
 当前仓库主要是研究网页如何打印excel表格，用的第三方库是xlsx和filesaver
+主要是公司有个需求，需要调整打印出excel表格的宽度

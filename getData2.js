@@ -132,7 +132,7 @@ debugger;
 let list = rebuildList(column, 0);
 debugger;
 let maxHeight = getMaxHeight(list);
-adjustList(list, maxHeight);
+adjustList(list, maxHeight,0);
 console.log(JSON.stringify(list));
 debugger;
 function getMaxHeight(list) {
@@ -144,18 +144,20 @@ function getMaxHeight(list) {
     });
     return max;
 }
-function adjustList(list, height) {
+function adjustList(list, height, x) {
     list.forEach((item) => {
-        adjust(item, height);
+        adjust(item, height,x);
     });
 }
-function adjust(tree, height) {
+function adjust(tree, height,x) {
+    tree.location.x = x;
     let children = tree.children;
     if (children.length === 0) {
         tree.rowspan = height;
         tree.height = height;
     } else {
-        adjustList(children, height - tree.rowspan);
+        tree.height = height;
+        adjustList(children, height - tree.rowspan, x + tree.rowspan);
     }
 }
 

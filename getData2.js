@@ -57,84 +57,67 @@ let column = [
 *   children:Array<Tree>,//子节点
 * }
 */
-
-function rebuildList(list, y) {
+//y表示列数开始位置
+function rebuildList(list, y, keys) {
     let newList = [];
     let width = 0;
     for (let i = 0; i < list.length; i++) {
         let item = list[i];
-        item.y = width + y;
-        let tree = rebuildTree(item);
+        item.y = width + y;//计算当前单元格所在列数
+        let tree = rebuildTree(item, keys);
         width += tree.colspan;
         newList.push(tree);
     }
-
-
-
-    // let maxHeight;
-    // newList.forEach((item)=>{
-    //     maxHeight = getHeight(item);
-    // });
-
-
-
-
     return newList;
 }
-
-// function Tree({
-//     label,
-//     prop,
-//     columns
-// }){
-//     this.value = prop;
-//     this.children = colu
-// }
 
 function rebuildTree({
     label,
     prop,
     columns,
     y
-}) {
+}, keys) {
     let location = { y };
     let value = label;
-    let children = columns ? rebuildList(columns, y) : [];
-
-    let height = 0;
-    if (children.length) {
-        //获取子节点的最大深度
-        children.forEach((child) => {
-            if (child.height > height) {
-                height = child.height;
-            }
-        });
+    let children, colspan;
+    if (!columns || columns.length === 0) {
+        children = [];
+        colspan = 1;
+        keys.push(prop);
+    } else {
+        children = rebuildList(columns, y, keys);
+        //节点包含的列数等于所有子节点的列数和
+        colspan = children.reduce((x, item) => {
+            return x + item.colspan;
+        }, 0);
     }
 
+    //计算当前树的高度，等于子树的最大高度+1
+    let height = getMaxHeight(children);
     height++;
 
-    let colspan = children.reduce((x, item) => {
-        return x + item.colspan;
-    }, 0) || 1;
-    // let tree = new Tree(data);
     let tree = {
-        value,
-        children,
-        colspan,
-        location,
-        height,
-        rowspan: 1
+        value,//单元格内容
+        children,//子树
+        location,//单元格位置
+        height,//当前树的深度
+        colspan,//单元格包含列数
+        rowspan: 1//单元格包含行数
     };
-    // adjust(tree, height);
     return tree;
 }
+
+//根据column重新构建list,生的的list包含创建book的所有数据
+let keys = [];
+let list = rebuildList(column, 0, keys);
 debugger;
-let list = rebuildList(column, 0);
-debugger;
+//获取节点的最大高度
 let maxHeight = getMaxHeight(list);
-adjustList(list, maxHeight,0);
-console.log(JSON.stringify(list));
+//将所有节点都调整为最大高度
+adjustList(list, maxHeight, 0);
 debugger;
+
+//获取节点的最大高度
 function getMaxHeight(list) {
     let max = 0;
     list.forEach((item) => {
@@ -144,23 +127,25 @@ function getMaxHeight(list) {
     });
     return max;
 }
+/**
+ * 当前函数用于设置节点的行数和节点包含行的数量
+ * @param {*} list 节点数组
+ * @param {*} height 应该将当前节点调整到的高度
+ * @param {*} x 当前节点的行数
+ */
 function adjustList(list, height, x) {
     list.forEach((item) => {
-        adjust(item, height,x);
+        adjust(item, height, x);
     });
 }
-function adjust(tree, height,x) {
+
+function adjust(tree, height, x) {
     tree.location.x = x;
+    tree.height = height;
     let children = tree.children;
     if (children.length === 0) {
         tree.rowspan = height;
-        tree.height = height;
     } else {
-        tree.height = height;
         adjustList(children, height - tree.rowspan, x + tree.rowspan);
     }
 }
-
-// function adjust(tree,height){
-
-// }

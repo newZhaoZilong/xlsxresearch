@@ -122,7 +122,7 @@ function getResult({
         "!fullref": ref
     };
     let handle = (item) => {
-        // debugger;
+        // 
         let key = encodeCell(item.location);
         let { value, colspan, rowspan, location } = item;
         Sheet1[key] = {
@@ -201,6 +201,80 @@ function parseToBook(data, column) {
     });
 }
 
+function rebuildSheets(data) {
+    Object.keys(data.Sheets).forEach((key) => {
+        rebuildSheet(data.Sheets[key]);
+    });
+}
+
+function rebuildSheet(sheet) {
+    let merges = sheet["!merges"].filter((location) => {
+        return location.s.c !== location.e.c;
+    });
+    let set = new Set();
+    let mergeList = [];
+    merges.forEach((item) => {
+        let key = encodeCell(item.s);
+        set.add(key);
+        mergeList.push({
+            start: item.s.c,
+            end: item.e.c,
+            width: getWidth(sheet[key].v)
+        });
+    });
+
+    let list = sheet["!cols"];
+    Object.keys(sheet).forEach((key) => {
+        if (key[0] !== '!' && !set.has(key)) {
+            // 
+            let idx = turnToNum(key);
+            let width = getWidth(sheet[key].v);
+            if (!list[idx]) {
+                list[idx] = {
+                    wch: width
+                };
+            } else if (list[idx].wch < width) {
+                list[idx].wch = width;
+            }
+        }
+
+    });
+
+    mergeList.forEach((item) => {
+        let totalWidth = 0;
+        for (let i = item.start; i < item.end + 1; i++) {
+            totalWidth += list[i].wch;
+        }
+        if (totalWidth < item.width) {
+            let add = parseInt((item.width - totalWidth) / (item.end - item.start + 1));
+            for (let i = item.start; i < item.end + 1; i++) {
+                list[i].wch += add;
+            }
+        }
+    });
+}
+
+function getWidth(val) {
+    if (!val) {
+        return 10;
+    } else if (val.toString().charCodeAt(0) > 255) {/*再判断是否为中文*/
+        return val.toString().length * 2;
+    } else {
+        return val.toString().length;
+    }
+}
+
+
+function turnToNum(str) {
+    str = str.replace(/\d+/, '');
+    let num = 0;
+    for (let i = 0; i < str.length; i++) {
+        num += ((str.charCodeAt(i) - 65) + i * 26);
+    }
+    return num;
+}
+
 module.exports = {
-    parseToBook
+    parseToBook,
+    rebuildSheets
 }

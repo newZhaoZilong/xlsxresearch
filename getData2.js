@@ -69,7 +69,7 @@ function rebuildList(list, y) {
         newList.push(tree);
     }
 
-    
+
 
     // let maxHeight;
     // newList.forEach((item)=>{
@@ -99,31 +99,66 @@ function rebuildTree({
 }) {
     let location = { y };
     let value = label;
-    let children = columns ? rebuildList(columns,y) : [];
+    let children = columns ? rebuildList(columns, y) : [];
 
-    // let maxChildHeight = 0;
-    // //获取子节点的最大深度
-    // children.forEach((child)=>{
-    //     if(child.height > maxChildHeight){
-    //         maxChildHeight = child.height;
-    //     }
-    // });
-    
+    let height = 0;
+    if (children.length) {
+        //获取子节点的最大深度
+        children.forEach((child) => {
+            if (child.height > height) {
+                height = child.height;
+            }
+        });
+    }
+
+    height++;
 
     let colspan = children.reduce((x, item) => {
         return x + item.colspan;
     }, 0) || 1;
     // let tree = new Tree(data);
-    return {
+    let tree = {
         value,
         children,
         colspan,
-        location
-        // height:children.length > 0? children.length
-    }
+        location,
+        height,
+        rowspan: 1
+    };
+    // adjust(tree, height);
+    return tree;
 }
 debugger;
-let list = rebuildList(column,0);
-
+let list = rebuildList(column, 0);
 debugger;
-console.log(list,0);
+let maxHeight = getMaxHeight(list);
+adjustList(list, maxHeight);
+console.log(JSON.stringify(list));
+debugger;
+function getMaxHeight(list) {
+    let max = 0;
+    list.forEach((item) => {
+        if (max < item.height) {
+            max = item.height;
+        }
+    });
+    return max;
+}
+function adjustList(list, height) {
+    list.forEach((item) => {
+        adjust(item, height);
+    });
+}
+function adjust(tree, height) {
+    let children = tree.children;
+    if (children.length === 0) {
+        tree.rowspan = height;
+        tree.height = height;
+    } else {
+        adjustList(children, height - tree.rowspan);
+    }
+}
+
+// function adjust(tree,height){
+
+// }

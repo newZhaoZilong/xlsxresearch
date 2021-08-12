@@ -4,8 +4,8 @@ but.onclick = function () {
     console.log(XLSX);
     console.log(saveAs);
 
-    // let $table = document.querySelector('.x-table')
-    // const wb = XLSX.utils.table_to_book($table, { raw: true })
+    let $table = document.querySelector('.x-table')
+    const wb2 = XLSX.utils.table_to_book($table, { raw: true })
     // wb.Sheets["Sheet1"]['!cols'] = 50;
 
     // let wb = {
@@ -26,7 +26,7 @@ but.onclick = function () {
     rebuildSheets(data);
     let wb = data;
     debugger;
-    const wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' })
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array',cellStyles: true })
     debugger;
     saveAs.saveAs(
         new Blob([wbout], { type: 'application/octet-stream' }),
@@ -57,7 +57,7 @@ function rebuildSheet(sheet) {
     debugger;
     //算出列数
     let colLen = getLen(sheet["!ref"]);
-    let list = [];
+    let list = sheet["!cols"];
     Object.keys(sheet).forEach((key) => {
         if (key[0] !== '!' && !set.has(key)) {
             // debugger;
@@ -87,7 +87,6 @@ function rebuildSheet(sheet) {
             }
         }
     });
-    sheet["!cols"] = list;
 }
 function encode_cell(cell) {
     var col = cell.c + 1;

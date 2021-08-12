@@ -4,27 +4,12 @@ but.onclick = function () {
     console.log(XLSX);
     console.log(saveAs);
 
-    let $table = document.querySelector('.x-table')
-    const wb2 = XLSX.utils.table_to_book($table, { raw: true })
-    // wb.Sheets["Sheet1"]['!cols'] = 50;
+    // let $table = document.querySelector('.x-table')
+    // const wb2 = XLSX.utils.table_to_book($table, { raw: true })
 
-    // let wb = {
-    //     SheetNames:["shan"],
-    //     Sheets:{
-    //         shan:{
-    //             "!ref":"A1:A1",
-    //             "!cols":[{
-    //                 wch:getLength(val)
-    //             }],
-    //             A1:{
-    //                 t:'s',
-    //                 v:val
-    //             }
-    //         }
-    //     }
-    // };
-    rebuildSheets(data);
-    let wb = data;
+    // rebuildSheets(resultBook2);
+    debugger;
+    let wb = resultBook2;
     debugger;
     const wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array',cellStyles: true })
     debugger;

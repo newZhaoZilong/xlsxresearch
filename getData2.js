@@ -108,13 +108,20 @@ function rebuildTree({
 }
 
 //根据column重新构建list,生的的list包含创建book的所有数据
+let startX = 0, endX = 0, startY = 0, endY = 0;
 let keys = [];
 let list = rebuildList(column, 0, keys);
+
 debugger;
 //获取节点的最大高度
 let maxHeight = getMaxHeight(list);
 //将所有节点都调整为最大高度
 adjustList(list, maxHeight, 0);
+endX = startX + keys.length;
+endY = startY + list[0].height;
+
+//对data进行重构
+let dataList = rebuildData(data, keys, startX, endY);
 debugger;
 
 //获取节点的最大高度
@@ -148,4 +155,24 @@ function adjust(tree, height, x) {
     } else {
         adjustList(children, height - tree.rowspan, x + tree.rowspan);
     }
+}
+
+
+function rebuildData(data, keys, startX, startY) {
+    let colspan = 1, rowspan = 1;
+    return data.map((item, col) => {
+        return keys.map((key, row) => {
+            let value = item[key];
+            let location = {
+                x: startX + row * rowspan,
+                y: startY + col * colspan
+            }
+            return {
+                value,//单元格内容
+                location,//单元格位置
+                colspan,//单元格包含列数
+                rowspan//单元格包含行数
+            }
+        });
+    });
 }

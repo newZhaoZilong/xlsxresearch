@@ -1,4 +1,4 @@
-let resultBook2 = {
+let data = {
     "SheetNames": ["Sheet1"],
     "Sheets": {
         "Sheet1": {

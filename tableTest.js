@@ -4,14 +4,14 @@ but.onclick = function () {
     console.log(XLSX);
     console.log(saveAs);
 
-    let $table = document.querySelector('.x-table')
-    const wb2 = XLSX.utils.table_to_book($table, { raw: true })
+    // let $table = document.querySelector('.x-table')
+    // const wb2 = XLSX.utils.table_to_book($table, { raw: true })
 
-    // rebuildSheets(resultBook2);
+    rebuildSheets(resultData);
     debugger;
-    let wb = resultBook2;
+    let wb = resultData;
     debugger;
-    const wbout = XLSX.write(wb2, { bookType: 'xlsx', bookSST: true, type: 'array'})
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array'})
     debugger;
     saveAs.saveAs(
         new Blob([wbout], { type: 'application/octet-stream' }),
